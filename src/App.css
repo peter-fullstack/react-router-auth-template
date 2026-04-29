@@ -1,0 +1,31 @@
+.page-container {
+    display: grid;
+
+    grid-template-columns: 1fr;
+
+    gap: 5px;
+}
+
+.main-content-container {
+    display: grid;
+    text-align: center;
+    align-items: center;
+
+    grid-template-columns: 1fr 1fr 1fr;
+
+    gap: 5px;
+
+
+}
+
+.main-router-pane-and-nav-container {
+    display: grid;
+    text-align: center;
+
+    grid-template-columns: 1fr;
+
+    grid-template-rows: 1fr 1fr;
+    gap: 5px;
+
+
+}
