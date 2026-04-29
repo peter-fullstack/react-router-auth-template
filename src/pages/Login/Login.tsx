@@ -56,7 +56,8 @@ function Login() {
   return (
     <div>
       <form noValidate onSubmit={handleSubmit}>
-        <select name="select-user" onChange={handleUserChange}>
+
+        <select name="select-user" onChange={handleUserChange} style={{ margin: 5 }}>
           <option value="" style={{ display: 'none' }}>
             Select an user to test
           </option>
@@ -67,7 +68,7 @@ function Login() {
           ))}
         </select>
 
-        <div>
+        <div className='login-form-container'>
           <label htmlFor="email">Email</label>
           <input
             value={values.email}
@@ -79,7 +80,7 @@ function Login() {
           />
         </div>
 
-        <div>
+        <div className='login-form-container'>
           <label htmlFor="password">Password</label>
           <input
             value={values.password}

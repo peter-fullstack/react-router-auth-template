@@ -27,5 +27,14 @@
     grid-template-rows: 1fr 1fr;
     gap: 5px;
 
+}
 
+.login-form-container {
+    display: grid;
+    text-align: center;
+    align-items: center;
+
+    grid-template-columns: 1fr 1fr;
+
+    margin: 5px
 }
