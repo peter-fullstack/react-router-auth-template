@@ -1,15 +1,14 @@
-import { useRoutePaths, useSession } from '@/hooks'
+import { useRoutePaths } from '@/hooks'
 import { Link } from 'react-router-dom'
 import { CanAccess } from '../CanAccess'
 
 function NavBar() {
-  const { isAuthenticated, user, signOut } = useSession()
   const { LOGIN_PATH, METRICS_PATH, REGISTER_PATH, ROOT_PATH, USERS_PATH } =
     useRoutePaths()
 
   return (
     <div>
-      <ul>
+      <ul style={{ display: 'inline-flex', gap: 8, listStyle: 'none', padding: 0 }}>
         <li>
           <Link to={LOGIN_PATH}>Login</Link>
         </li>
@@ -32,13 +31,6 @@ function NavBar() {
           </li>
         </CanAccess>
       </ul>
-
-      {isAuthenticated && (
-        <>
-          <span style={{ marginRight: 4 }}>{user?.email}</span>
-          <button onClick={signOut}>Logout</button>
-        </>
-      )}
     </div>
   )
 }
