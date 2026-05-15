@@ -1,5 +1,7 @@
 import ReactDOM from 'react-dom/client'
 import App from './App'
+import { MsalProvider } from '@azure/msal-react'
+import { msalInstance } from '@/authConfig'
 
 async function enableMocking() {
   if (import.meta.env.MODE === 'development') {
@@ -13,7 +15,8 @@ async function enableMocking() {
 
 enableMocking().then(() => {
   ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-    <App />
+    <MsalProvider instance={msalInstance}>
+      <App />
+    </MsalProvider>
   )
-});
-
+})

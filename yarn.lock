@@ -23,6 +23,23 @@
     "@csstools/css-tokenizer" "^3.0.3"
     lru-cache "^10.4.3"
 
+"@azure/msal-browser@^5.10.1":
+  version "5.10.1"
+  resolved "https://registry.npmjs.org/@azure/msal-browser/-/msal-browser-5.10.1.tgz"
+  integrity sha512-hTbvOi9Ko2Jvn+G/fSmjzHf9WbNcf/o3epMtbeGx/pMwMrVAbi6OgCJVeCfsAb8IybSRpaCSc4EDRlYAhgngUQ==
+  dependencies:
+    "@azure/msal-common" "16.6.1"
+
+"@azure/msal-common@16.6.1":
+  version "16.6.1"
+  resolved "https://registry.npmjs.org/@azure/msal-common/-/msal-common-16.6.1.tgz"
+  integrity sha512-VxKdEtUwDuLD0F1hOQP7kye0YadZxFJfv37Em440geEf/w9uggKnHpRrqwZJOdxmPUOdhZ9kyRtKuAJW8wUcRg==
+
+"@azure/msal-react@^5.4.1":
+  version "5.4.1"
+  resolved "https://registry.npmjs.org/@azure/msal-react/-/msal-react-5.4.1.tgz"
+  integrity sha512-Io/Yu/UzLcv14+M9ZilzCQLHrVxDfj27/7X/T4NhuP3+sySabRpKpx8BUmYQOms0pQ0PLzTcYmLzTJt7Tg8YSA==
+
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.10.4", "@babel/code-frame@^7.27.1", "@babel/code-frame@^7.28.6", "@babel/code-frame@^7.29.0":
   version "7.29.0"
   resolved "https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.29.0.tgz"
@@ -4833,7 +4850,7 @@ react-router@6.27.0:
   dependencies:
     "@remix-run/router" "1.20.0"
 
-react@^18.0.0, "react@^18.0.0 || ^19.0.0", react@^18.3.1, react@>=16.8:
+"react@^16.8.0 || ^17 || ^18 || ^19.2.1", react@^18.0.0, "react@^18.0.0 || ^19.0.0", react@^18.3.1, react@>=16.8:
   version "18.3.1"
   resolved "https://registry.npmjs.org/react/-/react-18.3.1.tgz"
   integrity sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==
