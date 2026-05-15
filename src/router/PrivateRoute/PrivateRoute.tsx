@@ -30,9 +30,9 @@ function PrivateRoute(props: Props) {
     return <Navigate to={redirectTo} />
   }
 
-  if (!hasAllPermissions) {
-    return <Navigate to="/" />
-  }
+  // if (!hasAllPermissions) {
+  //   return <Navigate to="/" />
+  // }
 
   return (
     <ErrorBoundary

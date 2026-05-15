@@ -14,11 +14,8 @@ function AuthProvider(props: Props) {
   const { children } = props
 
   const [user, setUser] = useState<User>()
-  const [loadingUserData, setLoadingUserData] = useState(true)
+  const [loadingUserData, setLoadingUserData] = useState(false)
   const navigate = useNavigate()
-
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [userDisplayName, setUserDisplayName] = useState('')
 
   // Update to use MSAL for authentication state
   const { instance } = useMsal()
@@ -30,12 +27,13 @@ function AuthProvider(props: Props) {
 
     try {
       try {
+        setLoadingUserData(true);
+
         response = await instance.ssoSilent({
           scopes: ['User.Read']
         })
       } catch (error: any) {
         setLoadingUserData(false)
-        setIsLoggedIn(false)
 
         await instance.loginRedirect({
           scopes: ['User.Read']
@@ -49,24 +47,18 @@ function AuthProvider(props: Props) {
           permissions: [], // Permissions would need to be fetched separately
           roles: [] // Roles would need to be fetched separately
         })
-        setIsLoggedIn(true)
-        setUserDisplayName(response.account?.username || '')
-      } else {
-        setIsLoggedIn(false)
       }
     } catch (error) {
-      setIsLoggedIn(false)
+        // TODO - something more robust than alerting the user in production code
     }
     setLoadingUserData(false)
   }
 
   async function signOut() {
-    setUser(undefined)
-    setLoadingUserData(false)
-
-    const activeAccount = instance.getActiveAccount()
-    setIsLoggedIn(false)
-    setUserDisplayName('')
+    setUser(undefined);
+    setLoadingUserData(false);
+    const activeAccount = instance.getActiveAccount();
+  
     try {
       await instance.logoutRedirect({
         account: activeAccount,
@@ -94,4 +86,4 @@ function AuthProvider(props: Props) {
   )
 }
 
-export default AuthProvider
+export default AuthProvider;

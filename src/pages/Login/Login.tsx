@@ -68,7 +68,6 @@ function Login() {
       }
     } catch (error: any) {
       setIsLoggedIn(false)
-      alert(`Login failed. Please try again. ${error.message}`)
     }
   }
 
@@ -80,47 +79,10 @@ function Login() {
   return (
     <div>
       <form noValidate onSubmit={handleSubmit}>
-        <select
-          name="select-user"
-          onChange={handleUserChange}
-          style={{ margin: 5 }}
-        >
-          <option value="" style={{ display: 'none' }}>
-            Select an user to test
-          </option>
-          {users.map((user) => (
-            <option key={user.email} value={JSON.stringify(user)}>
-              {user.name}
-            </option>
-          ))}
-        </select>
-
-        <div className="login-form-container">
-          <label htmlFor="email">Email</label>
-          <input
-            value={values.email}
-            type="email"
-            name="email"
-            id="email"
-            disabled={loginRequestStatus === 'loading'}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="login-form-container">
-          <label htmlFor="password">Password</label>
-          <input
-            value={values.password}
-            type="password"
-            name="password"
-            id="password"
-            disabled={loginRequestStatus === 'loading'}
-            onChange={handleChange}
-          />
-        </div>
+        <h2>Login</h2>
 
         <button type="submit" disabled={loginRequestStatus === 'loading'}>
-          {loginRequestStatus === 'loading' ? 'Loading...' : 'Submit'}
+          {loginRequestStatus === 'loading' ? 'Loading...' : 'Login with Microsoft'}
         </button>
       </form>
     </div>

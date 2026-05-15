@@ -1,5 +1,4 @@
 import {
-  AxiosDefaults,
   AxiosError,
   AxiosInstance,
   AxiosRequestConfig,
@@ -8,20 +7,11 @@ import {
 } from 'axios'
 
 import { paths } from '@/router'
-import { api } from './api'
 import { msalInstance } from '@/authConfig'
 
 type FailedRequestQueue = {
   onSuccess: (token: string) => void
   onFailure: (error: AxiosError) => void
-}
-
-let isRefreshing = false
-let failedRequestQueue: FailedRequestQueue[] = []
-
-type SetAuthorizationHeaderParams = {
-  request: AxiosDefaults | AxiosRequestConfig
-  token: string
 }
 
 async function onRequest(config: AxiosRequestConfig) {

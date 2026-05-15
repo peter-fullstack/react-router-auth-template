@@ -18,7 +18,8 @@ function CanAccess(props: Props) {
     roles
   })
 
-  if (!isAuthenticated || !hasAllPermissions || !hasAllRoles) {
+  // if (!isAuthenticated || !hasAllPermissions || !hasAllRoles) {
+  if (!isAuthenticated) {
     return null
   }
 
