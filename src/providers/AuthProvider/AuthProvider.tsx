@@ -1,10 +1,10 @@
 import { ReactNode, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { AuthContext, SignInCredentials, User } from '@/contexts'
+import { AuthContext, User } from '@/contexts'
 import { paths } from '@/router'
 
 import { useMsal, useIsAuthenticated } from '@azure/msal-react'
-import { AuthenticationResult, BrowserUtils } from '@azure/msal-browser'
+import { AuthenticationResult } from '@azure/msal-browser'
 
 type Props = {
   children: ReactNode
@@ -21,8 +21,7 @@ function AuthProvider(props: Props) {
   const { instance } = useMsal()
   const isAuthenticated = useIsAuthenticated()
 
-  async function signIn(params: SignInCredentials) {
-    const { email, password } = params
+  async function signIn() {
     let response: AuthenticationResult | null = null
 
     try {

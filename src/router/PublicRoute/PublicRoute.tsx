@@ -13,10 +13,6 @@ function PublicRoute(props: Props) {
 
   const { isAuthenticated } = useSession()
 
-  if (isAuthenticated) {
-    return <Navigate to="/" />
-  }
-
   return (
     <ErrorBoundary
       fallback={<ErrorState text="An error occurred in the application." />}
