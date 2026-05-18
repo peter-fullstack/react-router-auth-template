@@ -17,7 +17,7 @@ async function initializeMsal() {
   // Handle redirect promise to complete authentication flow
   await msalInstance.initialize()
   const response = await msalInstance.handleRedirectPromise()
-  
+
   if (response) {
     // Set the active account after successful redirect
     msalInstance.setActiveAccount(response.account)

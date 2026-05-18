@@ -3,7 +3,6 @@ import { Navigate } from 'react-router-dom'
 import { ErrorBoundary } from 'react-error-boundary'
 import { ErrorState, Loader } from '@/components'
 import { useSession } from '@/hooks'
-import { validateUserPermissions } from '@/utils'
 
 type Props = {
   permissions?: string[]
@@ -13,14 +12,14 @@ type Props = {
 }
 
 function PrivateRoute(props: Props) {
-  const { permissions, roles, redirectTo = '/login', children } = props
+  const { redirectTo = '/login', children } = props
 
-  const { isAuthenticated, user, loadingUserData } = useSession()
-  const { hasAllPermissions } = validateUserPermissions({
-    user,
-    permissions,
-    roles
-  })
+  const { isAuthenticated, loadingUserData } = useSession()
+  // const { hasAllPermissions } = validateUserPermissions({
+  //   user,
+  //   permissions,
+  //   roles
+  // })
 
   if (loadingUserData) {
     return null

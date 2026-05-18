@@ -8,7 +8,14 @@ function NavBar() {
 
   return (
     <div>
-      <ul style={{ display: 'inline-flex', gap: 8, listStyle: 'none', padding: 0 }}>
+      <ul
+        style={{
+          display: 'inline-flex',
+          gap: 8,
+          listStyle: 'none',
+          padding: 0
+        }}
+      >
         <li>
           <Link to={LOGIN_PATH}>Login</Link>
         </li>

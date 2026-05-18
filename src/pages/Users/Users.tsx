@@ -36,7 +36,10 @@ function Users() {
         {users?.length > 0 ? (
           users.map((user) => (
             <li key={user.email}>
-              <strong>Email:</strong> {user.email} <strong>Permissions:</strong> {user?.permissions.map(permission => permission).join(', ')} <strong>Roles:</strong> {user?.roles.map(role => role).join(', ')}
+              <strong>Email:</strong> {user.email} <strong>Permissions:</strong>{' '}
+              {user?.permissions.map((permission) => permission).join(', ')}{' '}
+              <strong>Roles:</strong>{' '}
+              {user?.roles.map((role) => role).join(', ')}
             </li>
           ))
         ) : (

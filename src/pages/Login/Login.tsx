@@ -1,33 +1,23 @@
-import React, { FormEvent, useEffect, useState } from 'react';
-import { useMsal, useIsAuthenticated } from '@azure/msal-react';
-import { AuthenticationResult } from '@azure/msal-browser';
-import { useSession } from '@/hooks';
-
-function initialFormValues() {
-  return {
-    email: '',
-    password: ''
-  }
-}
+import { FormEvent, useEffect, useState } from 'react'
+import { useSession } from '@/hooks'
 
 function Login() {
- 
-  const [loginRequestStatus, setLoginRequestStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [loginRequestStatus, setLoginRequestStatus] = useState<
+    'idle' | 'loading' | 'success' | 'error'
+  >('idle')
 
-   const { signIn } = useSession();
-
+  const { signIn } = useSession()
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
-    setLoginRequestStatus('loading');
+    setLoginRequestStatus('loading')
 
-      try { 
-        await signIn()
-        setLoginRequestStatus('success');
-      } catch (error) {
-        setLoginRequestStatus('error');
-      }
-    
+    try {
+      await signIn()
+      setLoginRequestStatus('success')
+    } catch (error) {
+      setLoginRequestStatus('error')
+    }
   }
 
   useEffect(() => {
@@ -41,7 +31,9 @@ function Login() {
         <h2>Login</h2>
 
         <button type="submit" disabled={loginRequestStatus === 'loading'}>
-          {loginRequestStatus === 'loading' ? 'Loading...' : 'Login with Microsoft'}
+          {loginRequestStatus === 'loading'
+            ? 'Loading...'
+            : 'Login with Microsoft'}
         </button>
       </form>
     </div>

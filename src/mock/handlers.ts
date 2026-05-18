@@ -4,7 +4,6 @@ import { http, HttpResponse } from 'msw'
 const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
 export const handlers = [
-  
   // Get user data endpoint
   http.get(`${baseURL}/me`, ({ request }) => {
     const authHeader = request.headers.get('Authorization')

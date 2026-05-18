@@ -26,7 +26,7 @@ function AuthProvider(props: Props) {
 
     try {
       try {
-        setLoadingUserData(true);
+        setLoadingUserData(true)
 
         response = await instance.ssoSilent({
           scopes: ['User.Read']
@@ -48,16 +48,16 @@ function AuthProvider(props: Props) {
         })
       }
     } catch (error) {
-        // TODO - something more robust than alerting the user in production code
+      // TODO - something more robust than alerting the user in production code
     }
     setLoadingUserData(false)
   }
 
   async function signOut() {
-    setUser(undefined);
-    setLoadingUserData(false);
-    const activeAccount = instance.getActiveAccount();
-  
+    setUser(undefined)
+    setLoadingUserData(false)
+    const activeAccount = instance.getActiveAccount()
+
     try {
       await instance.logoutRedirect({
         account: activeAccount,
@@ -85,4 +85,4 @@ function AuthProvider(props: Props) {
   )
 }
 
-export default AuthProvider;
+export default AuthProvider

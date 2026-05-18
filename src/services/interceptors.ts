@@ -9,28 +9,19 @@ import {
 import { paths } from '@/router'
 import { msalInstance } from '@/authConfig'
 
-type FailedRequestQueue = {
-  onSuccess: (token: string) => void
-  onFailure: (error: AxiosError) => void
-}
-
 async function onRequest(config: AxiosRequestConfig) {
- const account = msalInstance.getActiveAccount()
-  
+  const account = msalInstance.getActiveAccount()
+
   if (account) {
-    try {
-      const response = await msalInstance.acquireTokenSilent({
-        scopes: ['User.Read'], // Adjust scopes as needed
-        account: account
-      })
-      
-      config.headers = config.headers || {}
-      config.headers['Authorization'] = `Bearer ${response.accessToken}`
-    } catch (error) {
-      throw error;
-    }
+    const response = await msalInstance.acquireTokenSilent({
+      scopes: ['User.Read'], // Adjust scopes as needed
+      account: account
+    })
+
+    config.headers = config.headers || {}
+    config.headers['Authorization'] = `Bearer ${response.accessToken}`
   }
-  
+
   return config as InternalAxiosRequestConfig
 }
 
@@ -46,14 +37,16 @@ type ErrorCode = {
   code: string
 }
 
-function onResponseError(error: AxiosError<ErrorCode>): Promise<AxiosError | AxiosResponse> {
-   if (error?.response?.status === 401) {
+function onResponseError(
+  error: AxiosError<ErrorCode>
+): Promise<AxiosError | AxiosResponse> {
+  if (error?.response?.status === 401) {
     // Token is invalid/expired and MSAL couldn't refresh it
     // Redirect to login
     window.location.href = paths.LOGIN_PATH
   }
 
-  return Promise.reject(error);
+  return Promise.reject(error)
 }
 
 export function setupInterceptors(axiosInstance: AxiosInstance): AxiosInstance {
