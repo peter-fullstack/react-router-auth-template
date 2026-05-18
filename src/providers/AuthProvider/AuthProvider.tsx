@@ -4,7 +4,6 @@ import { AuthContext, User } from '@/contexts'
 import { paths } from '@/router'
 
 import { useMsal, useIsAuthenticated } from '@azure/msal-react'
-import { AuthenticationResult } from '@azure/msal-browser'
 
 type Props = {
   children: ReactNode
@@ -22,35 +21,24 @@ function AuthProvider(props: Props) {
   const isAuthenticated = useIsAuthenticated()
 
   async function signIn() {
-    let response: AuthenticationResult | null = null
-
     try {
-      try {
-        setLoadingUserData(true)
-
-        response = await instance.ssoSilent({
-          scopes: ['User.Read']
-        })
-      } catch (error: any) {
-        setLoadingUserData(false)
-
-        await instance.loginRedirect({
-          scopes: ['User.Read']
-        })
-      }
-
-      if (response?.account) {
-        instance.setActiveAccount(response.account)
-        setUser({
-          email: response.account?.username,
-          permissions: [], // Permissions would need to be fetched separately
-          roles: [] // Roles would need to be fetched separately
-        })
-      }
+      // Try silent SSO first
+      setLoadingUserData(true)
+      await instance.ssoSilent({
+        scopes: ['User.Read']
+      })
+      // If successful, user is already authenticated
+      // The active account is already set by main.tsx initialization
     } catch (error) {
-      // TODO - something more robust than alerting the user in production code
+      // Silent SSO failed, redirect to Microsoft login
+      // Note: This will navigate away from the page
+      // The redirect response is handled in main.tsx
+      await instance.loginRedirect({
+        scopes: ['User.Read']
+      })
+    } finally {
+      setLoadingUserData(false)
     }
-    setLoadingUserData(false)
   }
 
   async function signOut() {
