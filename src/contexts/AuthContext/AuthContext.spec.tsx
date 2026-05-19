@@ -21,10 +21,7 @@ function SampleComponent() {
     <div>
       <button
         onClick={() =>
-          signIn({
-            email: 'email@site.com',
-            password: 'password'
-          })
+          signIn()
         }
       >
         Sign in
