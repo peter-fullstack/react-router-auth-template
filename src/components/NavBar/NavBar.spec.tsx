@@ -5,15 +5,16 @@ import { AuthContext } from '@/contexts'
 import { paths } from '@/router'
 import NavBar from './NavBar'
 
-const providerUserUnloggedMock = {
+const providerUserLoggedOutMock = {
   signIn: jest.fn(),
   signOut: jest.fn(),
   user: undefined,
   isAuthenticated: false,
-  loadingUserData: false
+  loadingUserData: false,
+  authError: ''
 }
 
-const providerUserLoggedMock = {
+const providerUserLoggedInMock = {
   signIn: jest.fn(),
   signOut: jest.fn(),
   user: {
@@ -22,7 +23,8 @@ const providerUserLoggedMock = {
     roles: []
   },
   isAuthenticated: true,
-  loadingUserData: false
+  loadingUserData: false,
+  authError: ''
 }
 
 type WrapperProps = {
@@ -36,34 +38,37 @@ function wrapper(props: WrapperProps) {
 }
 
 describe('NavBar component', () => {
-  it('should render with success', () => {
+  it('should render with Login link', () => {
     render(
-      <AuthContext.Provider value={providerUserUnloggedMock}>
+      <AuthContext.Provider value={providerUserLoggedOutMock}>
         <NavBar />
       </AuthContext.Provider>,
       { wrapper }
     )
 
     expect(screen.getByText(/Login/)).toHaveAttribute('href', paths.LOGIN_PATH)
+    expect(screen.queryByText(/Users/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Metrics/)).not.toBeInTheDocument()
   })
 
   describe('when the user is authenticated', () => {
-    it('should show user email', () => {
+    it('should show Users and Metrics menu links', () => {
       render(
-        <AuthContext.Provider value={providerUserLoggedMock}>
+        <AuthContext.Provider value={providerUserLoggedInMock}>
           <NavBar />
         </AuthContext.Provider>,
         { wrapper }
       )
 
-      expect(screen.getByText(/email@site\.com/)).toBeInTheDocument()
+      expect(screen.getByText(/Users/)).toBeInTheDocument()
+      expect(screen.getByText(/Metrics/)).toBeInTheDocument()
     })
   })
 
   describe('when the user clicks on the logout button', () => {
     it('should logout user', () => {
       render(
-        <AuthContext.Provider value={providerUserLoggedMock}>
+        <AuthContext.Provider value={providerUserLoggedInMock}>
           <NavBar />
         </AuthContext.Provider>,
         { wrapper }
@@ -73,7 +78,7 @@ describe('NavBar component', () => {
 
       fireEvent.click(logoutButton)
 
-      expect(providerUserLoggedMock.signOut).toHaveBeenCalledTimes(1)
+      expect (providerUserLoggedInMock.signOut).toHaveBeenCalledTimes(1)
     })
   })
 })

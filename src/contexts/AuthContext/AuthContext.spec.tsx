@@ -3,29 +3,46 @@ import { useSession } from '@/hooks'
 import { AuthProvider } from '@/providers'
 import { api } from '@/services'
 import { paths } from '@/router'
+import { PublicClientApplication } from '@azure/msal-browser'
+import { MemoryRouter } from 'react-router-dom'
+import { MsalProvider } from '@azure/msal-react'
 
 const mockNavigate = jest.fn()
 
 jest.mock('@/services/api')
+
 jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'), // Keep all real exports
   useNavigate: () => mockNavigate,
   useLocation: () => ({
     pathname: '/'
   })
 }))
 
+// Mock the MSAL instance with jest functions
+const mockMsalInstance = {
+  ssoSilent: jest.fn(),
+  loginRedirect: jest.fn(),
+  logoutRedirect: jest.fn(),
+  getActiveAccount: jest.fn(),
+  getAllAccounts: jest.fn()
+  // Add other methods as needed
+} as unknown as PublicClientApplication
+
+// Mock the hooks
+jest.mock('@azure/msal-react', () => ({
+  MsalProvider: ({ children }: any) => children, // Simple passthrough for tests
+  useMsal: () => ({ instance: mockMsalInstance }),
+  useIsAuthenticated: () => false // or true, depending on test
+}))
+
 function SampleComponent() {
-  const { signIn, signOut } = useSession()
+  const { signIn, signOut, authError } = useSession()
 
   return (
     <div>
-      <button
-        onClick={() =>
-          signIn()
-        }
-      >
-        Sign in
-      </button>
+      <button onClick={() => signIn()}>Sign in</button>
+      {authError && <p>{authError}</p>}
 
       <button onClick={signOut}>Sign out</button>
     </div>
@@ -34,9 +51,13 @@ function SampleComponent() {
 
 function customRender() {
   render(
-    <AuthProvider>
-      <SampleComponent />
-    </AuthProvider>
+    <MemoryRouter>
+      <MsalProvider instance={mockMsalInstance}>
+        <AuthProvider>
+          <SampleComponent />
+        </AuthProvider>
+      </MsalProvider>
+    </MemoryRouter>
   )
 }
 
@@ -45,90 +66,55 @@ describe('AuthProvider', () => {
     jest.clearAllMocks()
   })
 
-  describe('when invoked and return valid response', () => {
-    it('should dispatch signIn function', async () => {
-      const responseMock = {
-        data: {
-          token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
-          refreshToken: '84ee647c-ac74-4e34-bb84-1bd6c96b3977',
-          permissions: ['users.list', 'users.create', 'metrics.list'],
-          roles: ['administrator']
-        }
-      }
-
-      ;(api.post as jest.Mock).mockReturnValueOnce(responseMock)
+  describe('when invoked', () => {
+    it('should dispatch the msal functions in the correct order', async () => {
+      ;(mockMsalInstance.ssoSilent as jest.Mock).mockRejectedValueOnce(
+        new Error('Silent SSO failed')
+      )
 
       customRender()
 
-      const signInButton = screen.getByRole('button', { name: /sign in/i })
+      const signInButton = screen.getByRole('button', { name: /Sign in/i })
 
       fireEvent.click(signInButton)
 
       await waitFor(
         () => {
-          expect(api.post).toHaveBeenCalledTimes(1)
-          expect(api.post).toHaveReturnedWith(responseMock)
+          expect(mockMsalInstance.ssoSilent as jest.Mock).toHaveBeenCalledTimes(1)
+          expect(mockMsalInstance.loginRedirect as jest.Mock).toHaveBeenCalledTimes(1)
         },
         { timeout: 1000 }
       )
     })
   })
 
-  describe('when invoked and return invalid response', () => {
-    it('should dispatch signIn function', async () => {
-      ;(api.post as jest.Mock).mockRejectedValueOnce({})
+  describe('when invoked and there is an error', () => {
+    it('should dispatch present a message for displaying to the user', async () => {
+     ;(mockMsalInstance.ssoSilent as jest.Mock).mockRejectedValueOnce(
+        new Error('Silent SSO failed')
+      )
+
+      ;(mockMsalInstance.loginRedirect as jest.Mock).mockRejectedValueOnce(
+        new Error('Redirect failed')
+      )
 
       customRender()
 
-      const signInButton = screen.getByRole('button', { name: /sign in/i })
+      const signInButton = screen.getByRole('button', {
+        name: /Sign in/i
+      })
 
       fireEvent.click(signInButton)
 
-      await waitFor(
+       await waitFor(
         () => {
-          expect(api.post).toHaveBeenCalledTimes(1)
+          expect(mockMsalInstance.ssoSilent as jest.Mock).toHaveBeenCalledTimes(1)
+          expect(mockMsalInstance.loginRedirect as jest.Mock).toHaveBeenCalledTimes(1)
         },
         { timeout: 1000 }
       )
-    })
-  })
 
-  describe('when the request to `/me` endpoint returns valid data', () => {
-    it('should return valid paylod on make `/me`', async () => {
-      const responseMock = {
-        data: {
-          email: 'admin@site.com',
-          permissions: ['users.list', 'users.create', 'metrics.list'],
-          roles: ['administrator']
-        }
-      }
-
-      ;(api.get as jest.Mock).mockReturnValueOnce(responseMock)
-
-      customRender()
-
-      await waitFor(
-        () => {
-          expect(api.get).toHaveBeenCalledTimes(1)
-          expect(api.get).toHaveReturnedWith(responseMock)
-        },
-        { timeout: 1000 }
-      )
-    })
-  })
-
-  describe('when the request to `/me` endpoint returns invalid data', () => {
-    it('should return an error', async () => {
-      ;(api.get as jest.Mock).mockRejectedValueOnce({})
-
-      customRender()
-
-      await waitFor(
-        () => {
-          expect(api.get).toHaveBeenCalledTimes(1)
-        },
-        { timeout: 1000 }
-      )
+       expect(screen.getByText(/Authentication failed/)).toBeInTheDocument()
     })
   })
 

@@ -14,6 +14,7 @@ function AuthProvider(props: Props) {
 
   const [user, setUser] = useState<User>()
   const [loadingUserData, setLoadingUserData] = useState(false)
+  const [authError, setAuthError] = useState('')
   const navigate = useNavigate()
 
   // Update to use MSAL for authentication state
@@ -22,20 +23,25 @@ function AuthProvider(props: Props) {
 
   async function signIn() {
     try {
-      // Try silent SSO first
-      setLoadingUserData(true)
-      await instance.ssoSilent({
-        scopes: ['User.Read']
-      })
-      // If successful, user is already authenticated
-      // The active account is already set by main.tsx initialization
+      try {
+        // Try silent SSO first
+        setLoadingUserData(true)
+        await instance.ssoSilent({
+          scopes: ['User.Read']
+        })
+        // If successful, user is already authenticated
+        // The active account is already set by main.tsx initialization
+      } catch (error) {
+        // Silent SSO failed, redirect to Microsoft login
+        // Note: This will navigate away from the page
+        // The redirect response is handled in main.tsx
+        await instance.loginRedirect({
+          scopes: ['User.Read']
+        })
+      }
     } catch (error) {
-      // Silent SSO failed, redirect to Microsoft login
-      // Note: This will navigate away from the page
-      // The redirect response is handled in main.tsx
-      await instance.loginRedirect({
-        scopes: ['User.Read']
-      })
+      setUser(undefined)
+      setAuthError('Authentication failed')
     } finally {
       setLoadingUserData(false)
     }
@@ -65,7 +71,8 @@ function AuthProvider(props: Props) {
         user,
         loadingUserData,
         signIn,
-        signOut
+        signOut,
+        authError
       }}
     >
       {children}

@@ -1,10 +1,16 @@
-import { useRoutePaths } from '@/hooks'
+import { useRoutePaths, useSession } from '@/hooks'
 import { Link } from 'react-router-dom'
 import { CanAccess } from '../CanAccess'
 
 function NavBar() {
   const { LOGIN_PATH, METRICS_PATH, REGISTER_PATH, ROOT_PATH, USERS_PATH } =
     useRoutePaths()
+
+  const { isAuthenticated, signOut } = useSession()
+
+  const handleLogout = () => {
+    signOut()
+  }
 
   return (
     <div>
@@ -17,7 +23,11 @@ function NavBar() {
         }}
       >
         <li>
-          <Link to={LOGIN_PATH}>Login</Link>
+          {isAuthenticated ? (
+            <button onClick={handleLogout}>Logout</button>
+          ) : (
+            <Link to={LOGIN_PATH}>Login</Link>
+          )}
         </li>
         <li>
           <Link to={REGISTER_PATH}>Register</Link>
