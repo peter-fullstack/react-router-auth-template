@@ -23,7 +23,6 @@ describe('CanAccess component', () => {
       ;(useSession as jest.Mock).mockReturnValue({
         isAuthenticated: false
       })
-
       ;(validateUserPermissions as jest.Mock).mockReturnValue({
         hasAllPermissions: false,
         hasAllRoles: false

@@ -7,7 +7,8 @@ const providerUserUnloggedMock = {
   isAuthenticated: false,
   loadingUserData: false,
   signIn: jest.fn(),
-  signOut: jest.fn()
+  signOut: jest.fn(),
+  authError: ''
 }
 
 describe('Login page component', () => {

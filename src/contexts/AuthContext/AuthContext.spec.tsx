@@ -96,7 +96,6 @@ describe('AuthProvider', () => {
       ;(mockMsalInstance.ssoSilent as jest.Mock).mockRejectedValueOnce(
         new Error('Silent SSO failed')
       )
-
       ;(mockMsalInstance.loginRedirect as jest.Mock).mockRejectedValueOnce(
         new Error('Redirect failed')
       )
