@@ -1,8 +1,6 @@
 import { ReactNode, Suspense } from 'react'
-import { Navigate } from 'react-router-dom'
 import { ErrorBoundary } from 'react-error-boundary'
 import { ErrorState, Loader } from '@/components'
-import { useSession } from '@/hooks'
 
 type Props = {
   children: ReactNode
@@ -10,12 +8,6 @@ type Props = {
 
 function PublicRoute(props: Props) {
   const { children } = props
-
-  const { isAuthenticated } = useSession()
-
-  if (isAuthenticated) {
-    return <Navigate to="/" />
-  }
 
   return (
     <ErrorBoundary

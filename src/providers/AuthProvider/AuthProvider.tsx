@@ -1,10 +1,9 @@
-import { ReactNode, useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { AxiosError } from 'axios'
-import { AuthContext, SignInCredentials, User } from '@/contexts'
+import { ReactNode, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { AuthContext, User } from '@/contexts'
 import { paths } from '@/router'
-import { api, setAuthorizationHeader } from '@/services'
-import { createSessionCookies, getToken, removeSessionCookies } from '@/utils'
+
+import { useMsal, useIsAuthenticated } from '@azure/msal-react'
 
 type Props = {
   children: ReactNode
@@ -14,71 +13,56 @@ function AuthProvider(props: Props) {
   const { children } = props
 
   const [user, setUser] = useState<User>()
-  const [loadingUserData, setLoadingUserData] = useState(true)
+  const [loadingUserData, setLoadingUserData] = useState(false)
+  const [authError, setAuthError] = useState('')
   const navigate = useNavigate()
-  const { pathname } = useLocation()
 
-  const token = getToken()
-  const isAuthenticated = Boolean(token)
+  // Update to use MSAL for authentication state
+  const { instance } = useMsal()
+  const isAuthenticated = useIsAuthenticated()
 
-  async function signIn(params: SignInCredentials) {
-    const { email, password } = params
-
+  async function signIn() {
     try {
-      const response = await api.post('/sessions', { email, password })
-      const { token, refreshToken, permissions, roles } = response.data
-
-      createSessionCookies({ token, refreshToken })
-      setUser({ email, permissions, roles })
-      setAuthorizationHeader({ request: api.defaults, token })
+      try {
+        // Try silent SSO first
+        setLoadingUserData(true)
+        await instance.ssoSilent({
+          scopes: ['User.Read']
+        })
+        // If successful, user is already authenticated
+        // The active account is already set by main.tsx initialization
+      } catch (error) {
+        // Silent SSO failed, redirect to Microsoft login
+        // Note: This will navigate away from the page
+        // The redirect response is handled in main.tsx
+        await instance.loginRedirect({
+          scopes: ['User.Read']
+        })
+      }
     } catch (error) {
-      const err = error as AxiosError
-      return err
-    }
-  }
-
-  function signOut() {
-    removeSessionCookies()
-    setUser(undefined)
-    setLoadingUserData(false)
-    navigate(paths.LOGIN_PATH)
-  }
-
-  useEffect(() => {
-    if (!token) {
-      removeSessionCookies()
       setUser(undefined)
+      setAuthError('Authentication failed')
+    } finally {
       setLoadingUserData(false)
     }
-  }, [navigate, pathname, token])
+  }
 
-  useEffect(() => {
-    const token = getToken()
+  async function signOut() {
+    setUser(undefined)
+    setLoadingUserData(false)
+    const activeAccount = instance.getActiveAccount()
 
-    async function getUserData() {
-      setLoadingUserData(true)
-
-      try {
-        const response = await api.get('/me')
-
-        if (response?.data) {
-          const { email, permissions, roles } = response.data
-          setUser({ email, permissions, roles })
-        }
-      } catch (error) {
-        /**
-         * an error handler can be added here
-         */
-      } finally {
-        setLoadingUserData(false)
-      }
+    try {
+      await instance.logoutRedirect({
+        account: activeAccount,
+        postLogoutRedirectUri: window.location.origin + paths.LOGIN_PATH
+      })
+    } catch (error) {
+      // Todo: Handle logout error if needed
     }
 
-    if (token) {
-      setAuthorizationHeader({ request: api.defaults, token })
-      getUserData()
-    }
-  }, [])
+    navigate(paths.LOGIN_PATH)
+  }
 
   return (
     <AuthContext.Provider
@@ -87,7 +71,8 @@ function AuthProvider(props: Props) {
         user,
         loadingUserData,
         signIn,
-        signOut
+        signOut,
+        authError
       }}
     >
       {children}

@@ -16,8 +16,9 @@ export type AuthContextData = {
   user?: User
   isAuthenticated: boolean
   loadingUserData: boolean
-  signIn: (credentials: SignInCredentials) => Promise<void | AxiosError>
+  signIn: () => Promise<void | AxiosError>
   signOut: () => void
+  authError: string
 }
 
 const AuthContext = createContext({} as AuthContextData)

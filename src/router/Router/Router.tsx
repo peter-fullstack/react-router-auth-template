@@ -19,9 +19,9 @@ function Router() {
       <Route
         path={ROOT_PATH}
         element={
-          <PrivateRoute redirectTo={LOGIN_PATH}>
+          <PublicRoute>
             <Home />
-          </PrivateRoute>
+          </PublicRoute>
         }
       />
 

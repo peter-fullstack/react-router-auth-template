@@ -7,7 +7,8 @@ const providerUserUnloggedMock = {
   isAuthenticated: false,
   loadingUserData: false,
   signIn: jest.fn(),
-  signOut: jest.fn()
+  signOut: jest.fn(),
+  authError: ''
 }
 
 describe('Login page component', () => {
@@ -19,51 +20,13 @@ describe('Login page component', () => {
     )
   })
 
-  describe('when user select user test in select box', () => {
-    it('should have a value on input on the fields', () => {
-      const select = screen.getByRole('combobox') as HTMLSelectElement
-      const inputEmail = screen.getByLabelText(/email/i) as HTMLInputElement
-      const inputPassword = screen.getByLabelText(
-        /password/i
-      ) as HTMLInputElement
-
-      fireEvent.change(select, {
-        target: {
-          value:
-            '{"name":"Client","email":"client@site.com","password":"password@123"}'
-        }
-      })
-
-      fireEvent.change(inputEmail, { target: { value: 'client@site.com' } })
-      fireEvent.change(inputPassword, { target: { value: 'password@123' } })
-
-      expect(inputEmail.value).toEqual('client@site.com')
-      expect(inputPassword.value).toEqual('password@123')
-    })
-  })
-
-  describe('when inputting email and password on the fields', () => {
-    it('should have a value in the inputs', () => {
-      const inputEmail = screen.getByLabelText(/email/i) as HTMLInputElement
-      const inputPassword = screen.getByLabelText(
-        /password/i
-      ) as HTMLInputElement
-
-      fireEvent.change(inputEmail, { target: { value: 'email@site.com' } })
-      fireEvent.change(inputPassword, { target: { value: 'pass@123' } })
-
-      expect(inputEmail.value).toEqual('email@site.com')
-      expect(inputPassword.value).toEqual('pass@123')
-    })
-  })
-
   it('should disabled button when submit form', async () => {
     const button = screen.getByRole('button', {
-      name: /submit/i
+      name: /Login with Microsoft/i
     }) as HTMLButtonElement
 
     expect(button).not.toHaveAttribute('disabled')
-    expect(button).toHaveTextContent(/Submit/)
+    expect(button).toHaveTextContent(/Login with Microsoft/)
 
     fireEvent.click(button)
 

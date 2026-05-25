@@ -1,24 +1,43 @@
 import { render, screen, waitFor } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import { api } from '@/services/api'
+import { AuthProvider } from '@/providers'
 import Users from './Users'
 
 jest.mock('@/services/api')
+
+// Wrapper component for tests
+const TestWrapper = ({ children }: { children: React.ReactNode }) => (
+  <MemoryRouter>
+    <AuthProvider>{children}</AuthProvider>
+  </MemoryRouter>
+)
 
 describe('Users page component', () => {
   describe('when the request returns valid data', () => {
     it('should render a list of users', async () => {
       const responseMock = {
-        data: {
-          users: [
-            { id: 1, name: 'User 1', email: 'user1@site.com' },
-            { id: 2, name: 'User 2', email: 'user2@site.com' }
-          ]
-        }
+        data: [
+          {
+            id: 1,
+            name: 'User 1',
+            email: 'user1@site.com',
+            permissions: ['read'],
+            roles: ['user']
+          },
+          {
+            id: 2,
+            name: 'User 2',
+            email: 'user2@site.com',
+            permissions: ['read', 'write'],
+            roles: ['admin']
+          }
+        ]
       }
 
       ;(api.get as jest.Mock).mockReturnValueOnce(responseMock)
 
-      render(<Users />)
+      render(<Users />, { wrapper: TestWrapper })
 
       await waitFor(
         () => {
@@ -34,7 +53,7 @@ describe('Users page component', () => {
     it('should render empty list message', async () => {
       ;(api.get as jest.Mock).mockReturnValueOnce({ data: {} })
 
-      render(<Users />)
+      render(<Users />, { wrapper: TestWrapper })
 
       await waitFor(
         () => {
@@ -49,7 +68,7 @@ describe('Users page component', () => {
     it('should render empty list message', async () => {
       ;(api.get as jest.Mock).mockRejectedValueOnce({})
 
-      render(<Users />)
+      render(<Users />, { wrapper: TestWrapper })
 
       await waitFor(
         () => {

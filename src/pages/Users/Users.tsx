@@ -5,6 +5,9 @@ import { api } from '@/services'
 type User = {
   id: number
   name: string
+  email: string
+  permissions: string[]
+  roles: string[]
 }
 
 function Users() {
@@ -14,7 +17,7 @@ function Users() {
     async function loadUsers() {
       try {
         const response = await api.get('/users')
-        const users = response?.data?.users || []
+        const users = response?.data || []
         setUsers(users)
       } catch (error) {
         const err = error as AxiosError
@@ -29,11 +32,15 @@ function Users() {
     <div>
       <h1>Users</h1>
 
-      <ul>
+      <ul style={{ listStyle: 'none', padding: 0, margin: '3rem' }}>
         {users?.length > 0 ? (
           users.map((user) => (
-            <li key={user.id}>
-              <strong>ID:</strong> {user.id} <strong>Name:</strong> {user.name}
+            <li key={user.email}>
+              <strong>Name:</strong> {user.name} <strong>Email:</strong>{' '}
+              {user.email} <strong>Permissions:</strong>{' '}
+              {user?.permissions.map((permission) => permission).join(', ')}{' '}
+              <strong>Roles:</strong>{' '}
+              {user?.roles.map((role) => role).join(', ')}
             </li>
           ))
         ) : (
