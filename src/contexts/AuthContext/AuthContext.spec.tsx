@@ -1,7 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { useSession } from '@/hooks'
 import { AuthProvider } from '@/providers'
-import { api } from '@/services'
 import { paths } from '@/router'
 import { PublicClientApplication } from '@azure/msal-browser'
 import { MemoryRouter } from 'react-router-dom'
@@ -31,7 +30,7 @@ const mockMsalInstance = {
 
 // Mock the hooks
 jest.mock('@azure/msal-react', () => ({
-  MsalProvider: ({ children }: any) => children, // Simple passthrough for tests
+  MsalProvider: ({ children }: { children: React.ReactNode }) => children, // Simple passthrough for tests
   useMsal: () => ({ instance: mockMsalInstance }),
   useIsAuthenticated: () => false // or true, depending on test
 }))
@@ -80,8 +79,12 @@ describe('AuthProvider', () => {
 
       await waitFor(
         () => {
-          expect(mockMsalInstance.ssoSilent as jest.Mock).toHaveBeenCalledTimes(1)
-          expect(mockMsalInstance.loginRedirect as jest.Mock).toHaveBeenCalledTimes(1)
+          expect(mockMsalInstance.ssoSilent as jest.Mock).toHaveBeenCalledTimes(
+            1
+          )
+          expect(
+            mockMsalInstance.loginRedirect as jest.Mock
+          ).toHaveBeenCalledTimes(1)
         },
         { timeout: 1000 }
       )
@@ -90,7 +93,7 @@ describe('AuthProvider', () => {
 
   describe('when invoked and there is an error', () => {
     it('should dispatch present a message for displaying to the user', async () => {
-     ;(mockMsalInstance.ssoSilent as jest.Mock).mockRejectedValueOnce(
+      ;(mockMsalInstance.ssoSilent as jest.Mock).mockRejectedValueOnce(
         new Error('Silent SSO failed')
       )
 
@@ -106,15 +109,19 @@ describe('AuthProvider', () => {
 
       fireEvent.click(signInButton)
 
-       await waitFor(
+      await waitFor(
         () => {
-          expect(mockMsalInstance.ssoSilent as jest.Mock).toHaveBeenCalledTimes(1)
-          expect(mockMsalInstance.loginRedirect as jest.Mock).toHaveBeenCalledTimes(1)
+          expect(mockMsalInstance.ssoSilent as jest.Mock).toHaveBeenCalledTimes(
+            1
+          )
+          expect(
+            mockMsalInstance.loginRedirect as jest.Mock
+          ).toHaveBeenCalledTimes(1)
         },
         { timeout: 1000 }
       )
 
-       expect(screen.getByText(/Authentication failed/)).toBeInTheDocument()
+      expect(screen.getByText(/Authentication failed/)).toBeInTheDocument()
     })
   })
 

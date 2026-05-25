@@ -20,7 +20,6 @@ describe('CanAccess component', () => {
 
   describe('when the user does not have permission', () => {
     it('should not render child component', () => {
-      
       ;(useSession as jest.Mock).mockReturnValue({
         isAuthenticated: false
       })

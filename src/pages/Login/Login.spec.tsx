@@ -19,7 +19,6 @@ describe('Login page component', () => {
     )
   })
 
-
   it('should disabled button when submit form', async () => {
     const button = screen.getByRole('button', {
       name: /Login with Microsoft/i

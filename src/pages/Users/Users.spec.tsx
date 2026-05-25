@@ -33,9 +33,9 @@ describe('Users page component', () => {
             roles: ['admin']
           }
         ]
-      };
+      }
 
-      (api.get as jest.Mock).mockReturnValueOnce(responseMock)
+      ;(api.get as jest.Mock).mockReturnValueOnce(responseMock)
 
       render(<Users />, { wrapper: TestWrapper })
 
